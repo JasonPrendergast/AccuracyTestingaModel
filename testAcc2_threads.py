@@ -140,29 +140,29 @@ class Producer:
                     
                             
                             
-                else:
-                    line_y = 'nan'
-                    print(jobtitle)
-                    print('y nan')
+               # else:
+                #    line_y = 'nan'
+                #    print(jobtitle)
+                #    print('y nan')
 
-                if all(v== 0 for v in line_x):
-                    print('error x')
+               # if all(v== 0 for v in line_x):
+               #     print('error x')
 
                         
                             
                 #Remove any array that is full of zero or set to string nan          
-                if not all(v== 0 for v in line_x) and not line_y == 'nan':
+                #if not all(v== 0 for v in line_x) and not line_y == 'nan':
                             
                     
-                    qfeatures.put(line_x)
-                    qlabels.put(line_y)
-                    self.nextTime+=(random.random())/1000
-                    self.i+=1
-                else:
+                qfeatures.put(line_x)
+                qlabels.put(line_y)
+                self.nextTime+=(random.random())/1000
+                self.i+=1
+               # else:
                     
-                    self.nextTime+=(random.random())/1000
-                    self.i+=1
-                    errorcount+=1
+                #    self.nextTime+=(random.random())/1000
+                #    self.i+=1
+                #    errorcount+=1
     
             fline=''
             jobtitle=''
@@ -194,14 +194,23 @@ class Consumer:
            if(self.nextTime<time.clock() and not qfeatures.empty()):
                 batch_x.append(qfeatures.get())
                 batch_y.append(qlabels.get())
+                features = np.array(list(batch_x))
 
-                result = (self.sess.run(tf.argmax(self.prediction.eval(feed_dict={x:[np.array(batch_x)]}),1)))
-
+                #result = (self.sess.run(tf.argmax(self.prediction.eval(feed_dict={x:[features]}),1)))
+               #result = self.sess.run(tf.argmax(self.prediction.eval(feed_dict={x: np.array(batch_x)}),1))
+                result=self.prediction.eval(session = self.sess,feed_dict={x: np.array(batch_x)})
+                result= np.array(result)
+                outputarray.append(str((labellexicon[int(np.argmax(result))])))
+                #print(np.argmax(result))
+                #print(topindex)
                 batch_x = []
                 batch_y = []
                 self.nextTime+=(random.random()*2)/1000
                 self.i+=1
-                outputarray.apppend(str((labellexicon[int(result)])))
+                #outputarray.append(np.argmax(result))
+                #print(str((labellexicon[int(result)])))
+               # print(result)
+                
                 
                 
                 
@@ -223,13 +232,14 @@ def use_neural_network():
 
     with tf.Session() as sess:
         sess.run(tf.global_variables_initializer())
+        
         #jobDescription = input_data
         p=Producer(test_x,test_y,featurelexicon,labellexicon)
         c=Consumer(len(test_x),sess,prediction)
         pt=threading.Thread(target=p.run,args=())
         ct=threading.Thread(target=c.run,args=())
         pt.start()
-        time.sleep(30)   
+        time.sleep(2)   
         ct.start()
 
         while (finishedflag==0):
@@ -240,7 +250,7 @@ def use_neural_network():
         for i in range(1000):
             print(test_y[i])
             print(outputarray[i])
-    
+            
         if test_y[i] == outputarray[i]:
             
             hit+=1
