@@ -222,30 +222,5 @@ def use_neural_network():
 use_neural_network()   
 
 
-def test_network():
-    global outputarray
-    hit=0
-    count=0
-    #for t in test_x:
-    for i in range(1000):
-        count+=1
-        print(count)
-        outputarray.append(use_neural_network(test_x[i]))
-
-    
-    for i in range(1000):
-        print(test_y[i])
-        print(outputarray[i])
-    
-        if test_y[i] == outputarray[i]:
-            
-            hit+=1
-    total = len(test_y)
-
-    print(hit)
-    print(total)
-
-#test_network()
-
 
 
