@@ -25,12 +25,10 @@ errorcount=0
 lemmatizer = WordNetLemmatizer()
 
 n_nodes_hl1 = 1000
-#print(type(n_nodes_hl1))
 n_nodes_hl2 = 500
 n_nodes_hl3 = 1000
 
 n_classes = 64029
-#hm_data = 2000000
 with open('lexicon_jt_64029.pickle','rb') as f:
     print('label')
     labellexicon = pickle.load(f)
@@ -40,9 +38,7 @@ with open('lexicon_jd_22694.pickle','rb') as f:
     featurelexicon = pickle.load(f)
     print(len(featurelexicon))
 
-#batch_size = 128
-#hm_epochs = 10
-#tf.reset_default_graph()
+
 x = tf.placeholder('float',shape=(None, 22694))
 y = tf.placeholder('float',shape=(None, 64029))
 
@@ -75,9 +71,7 @@ def neural_network_model(data):
     #print(output)
     return output
 
-#tf.reset_default_graph()
-#saver = tf.train.Saver()
-#tf.reset_default_graph()
+
 saver = tf.train.import_meta_graph('./modelMiddle.ckpt.meta')
 #
 #
@@ -105,14 +99,11 @@ class Producer:
             
             if(self.nextTime<time.clock()):
                 jobDescription = self.test_x[self.i]
-                
-                            
+                                            
                 features = np.zeros(len(self.featurelexicon))
 
                 jobDescription =jobDescription.strip().split()
                 
-                
-
                 for word in jobDescription:
                     
                     if word.lower() in self.featurelexicon:
@@ -137,38 +128,16 @@ class Producer:
                     
                     label[index_value] += 1
                     line_y = list(label)
-                    
-                            
-                            
-               # else:
-                #    line_y = 'nan'
-                #    print(jobtitle)
-                #    print('y nan')
-
-               # if all(v== 0 for v in line_x):
-               #     print('error x')
-
-                        
-                            
-                #Remove any array that is full of zero or set to string nan          
-                #if not all(v== 0 for v in line_x) and not line_y == 'nan':
-                            
-                    
+                
+                
                 qfeatures.put(line_x)
                 qlabels.put(line_y)
                 self.nextTime+=(random.random())/1000
                 self.i+=1
-               # else:
-                    
-                #    self.nextTime+=(random.random())/1000
-                #    self.i+=1
-                #    errorcount+=1
-    
+           
             fline=''
             jobtitle=''
             current_words=[]
-        
-
 
 
 class Consumer:
@@ -196,24 +165,16 @@ class Consumer:
                 batch_y.append(qlabels.get())
                 features = np.array(list(batch_x))
 
-                #result = (self.sess.run(tf.argmax(self.prediction.eval(feed_dict={x:[features]}),1)))
-               #result = self.sess.run(tf.argmax(self.prediction.eval(feed_dict={x: np.array(batch_x)}),1))
+               
                 result=self.prediction.eval(session = self.sess,feed_dict={x: np.array(batch_x)})
                 result= np.array(result)
                 outputarray.append(str((labellexicon[int(np.argmax(result))])))
-                #print(np.argmax(result))
-                #print(topindex)
+               
                 batch_x = []
                 batch_y = []
                 self.nextTime+=(random.random()*2)/1000
                 self.i+=1
-                #outputarray.append(np.argmax(result))
-                #print(str((labellexicon[int(result)])))
-               # print(result)
-                
-                
-                
-                
+                        
         finishedflag=1
                
 #####################################################################
@@ -233,7 +194,6 @@ def use_neural_network():
     with tf.Session() as sess:
         sess.run(tf.global_variables_initializer())
         
-        #jobDescription = input_data
         p=Producer(test_x,test_y,featurelexicon,labellexicon)
         c=Consumer(len(test_x),sess,prediction)
         pt=threading.Thread(target=p.run,args=())
@@ -259,13 +219,9 @@ def use_neural_network():
     print(hit)
     print(total)
 
-use_neural_network()
-        
-    #return str((labellexicon[int(result)]))
+use_neural_network()   
 
 
-
-#print(str(use_neural_network('sales highstreet retail manager')))
 def test_network():
     global outputarray
     hit=0
@@ -276,8 +232,8 @@ def test_network():
         print(count)
         outputarray.append(use_neural_network(test_x[i]))
 
-    #for i in range(len(test_y)):
-    for i in range(1000):#range(len(test_y)):
+    
+    for i in range(1000):
         print(test_y[i])
         print(outputarray[i])
     
