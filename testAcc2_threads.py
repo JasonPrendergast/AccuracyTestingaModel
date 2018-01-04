@@ -20,8 +20,6 @@ finishedflag=0
 outputarray=[]
 errorcount=0
 
-#####################################################################
-#####################################################################
 lemmatizer = WordNetLemmatizer()
 
 n_nodes_hl1 = 1000
@@ -73,9 +71,7 @@ def neural_network_model(data):
 
 
 saver = tf.train.import_meta_graph('./modelMiddle.ckpt.meta')
-#
-#
-#
+
 class Producer:
     def __init__(self,test_x,train_y,featurelexicon,labellexicon):
         self.test_x=test_x
