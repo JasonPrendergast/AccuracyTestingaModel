@@ -13,6 +13,9 @@ import html as htmla
 import threading, time, random
 import queue as Queue
 
+#####################################################################
+#                       DEFINE PARAMS HERE                         #
+#####################################################################
 train_x,train_y,test_x,test_y = pickle.load(open("jobs_set_10000_0.pickle","rb"))
 qfeatures=Queue.Queue(900)
 qlabels=Queue.Queue(900)
@@ -72,6 +75,9 @@ def neural_network_model(data):
 
 saver = tf.train.import_meta_graph('./modelMiddle.ckpt.meta')
 
+#####################################################################
+#                       DEFINE PRODUCER HERE                        #
+#####################################################################
 class Producer:
     def __init__(self,test_x,train_y,featurelexicon,labellexicon):
         self.test_x=test_x
@@ -136,6 +142,9 @@ class Producer:
             current_words=[]
 
 
+#####################################################################
+#                       DEFINE CONSUMER HERE                        #
+#####################################################################
 class Consumer:
     def __init__(self,maximum,sess,prediction):
         self.nextTime=1
